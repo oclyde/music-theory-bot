@@ -5,3 +5,4 @@ This bot is designed to automate minor and tedious music theory processes.
 ## Ideal Functionalities
 1. Returns the root note and chord quality when given multiple notes
 2. Returns all chords and modes in a given key
+3. Returns the key associated with a given mode
