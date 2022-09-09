@@ -1,9 +1,9 @@
 # assigning notes to mathematical values
 # the value is equal to the number of steps above the root, centered on C
 note_values = {
-    'C': 0.0, 
-    'C#': 0.5, 'Db': 0.5, 
-    'D': 1.0, 
+    'C': 0.0,
+    'C#': 0.5, 'Db': 0.5,
+    'D': 1.0,
     'D#': 1.5, 'Eb': 1.5,
     'E': 2.0,
     'F': 2.5,
@@ -17,18 +17,18 @@ note_values = {
 
 # inversely assigning values to note equivalents
 value_notes = {
-    0.0: ('C'),
+    0.0: ('C',),
     0.5: ('C#','Db'),
-    1.0: ('D'),
+    1.0: ('D',),
     1.5: ('D#','Eb'),
-    2.0: ('E'),
-    2.5: ('F'),
+    2.0: ('E',),
+    2.5: ('F',),
     3.0: ('F#','Gb'),
-    3.5: ('G'),
+    3.5: ('G',),
     4.0: ('G#','Ab'),
-    4.5: ('A'),
+    4.5: ('A',),
     5.0: ('A#','Bb'),
-    5.5: ('B')
+    5.5: ('B',)
 }
 
 # representing chord qualities as arrays of note values
@@ -88,8 +88,8 @@ class Chord:
         self.root = root
         self.quality = quality
     
-    # printing the notes in the chord
-    def print_notes(self):
+    # returning the notes in the chord
+    def get_notes(self):
         # calculating the interval between the root and C
         interval = note_values[self.root]
         # creating an array of values representing the notes in the chord
@@ -103,15 +103,15 @@ class Chord:
                     if len(value_notes[note_value]) == 1:
                         notes.append(value_notes[note_value][0])
                     # appends the equivalent note with an accidental based on quality and key
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MAJOR' or 'AUGMENTED'):
+                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MAJOR' or self.quality == 'AUGMENTED'):
                         notes.append(value_notes[note_value][major_augmented_accidentals[self.root]])
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MINOR' or 'DIMINISHED'):
+                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MINOR' or self.quality == 'DIMINISHED'):
                         notes.append(value_notes[note_value][minor_diminished_accidentals[self.root]])
         return notes
 
 # runs indefinitely until requested to stop
 active = True
-while (active):
+while active:
     # getting root note with error-checking
     root = input("Root: ").lower().capitalize()
     while root not in note_values:
@@ -122,7 +122,7 @@ while (active):
         quality = input("Invalid response. Quality: ").upper()
     # using an instance of the Chord class to print the notes
     chord = Chord(root, quality)
-    notes = chord.print_notes()
+    notes = chord.get_notes()
     print(notes[0], notes[1], notes[2], notes[3])
     # checking if the user wants to enter another chord
     activity = input("Would you like to enter another chord? (Y/N) ").upper()
