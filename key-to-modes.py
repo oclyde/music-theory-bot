@@ -15,6 +15,7 @@ note_values = {
     'B': 5.5
 }
 
+
 # inversely assigning values to note equivalents
 value_notes = {
     0.0: ('C',),
@@ -31,11 +32,13 @@ value_notes = {
     5.5: ('B',)
 }
 
+
 # representing keys as arrays of note values
 key_degrees = {
     'MAJOR': [0.0, 1.0, 2.0, 2.5, 3.5, 4.5, 5.5],
     'MINOR': [0.0, 1.0, 1.5, 2.5, 3.5, 4.0, 5.0],
 }
+
 
 # representing modes as arrays of note values
 mode_degrees = {
@@ -47,6 +50,7 @@ mode_degrees = {
     'AEOLIAN': [0.0, 1.0, 1.5, 2.5, 3.5, 4.0, 5.0],
     'LOCRIAN': [0.0, 0.5, 1.5, 2.5, 3.0, 4.0, 5.0]
 }
+
 
 # using the circle of fifths to mark major/augmented roots as either sharp (0) or flat (1) keys
 major_accidentals = {
@@ -69,6 +73,7 @@ major_accidentals = {
     'Gb': 1
 }
 
+
 # using the circle of fifths to mark minor/diminished roots as either sharp (0) or flat (1) keys
 minor_accidentals = {
     'E': 0,
@@ -90,6 +95,7 @@ minor_accidentals = {
     'Gb': 1
 }
 
+
 # creating a class to work with keys
 class Key:
     # initializing the key with a root and quality
@@ -102,20 +108,20 @@ class Key:
         # calculating the interval between the root and C
         interval = note_values[self.root]
         # creating an array of values representing the notes in the key
-        values = [degree + interval if degree + interval <= 5.5 else degree + interval - 6 for degree in key_degrees[self.quality]]
+        values = [(degree + interval) % 6 for degree in key_degrees[self.quality]]
         # translating the values into the notes associated with the key
         key_notes = []
         for value in values:
-            for note_value in value_notes:
-                if note_value == value:
-                    # appends the equivalent note if there are no accidentals
-                    if len(value_notes[note_value]) == 1:
-                        key_notes.append(value_notes[note_value][0])
-                    # appends the equivalent note with an accidental based on quality and key
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MAJOR'):
-                        key_notes.append(value_notes[note_value][major_accidentals[self.root]])
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MINOR'):
-                        key_notes.append(value_notes[note_value][minor_accidentals[self.root]])
+            for note_value, note in value_notes.items():
+                # appends the equivalent note if there are no accidentals
+                if note_value == value and len(note) == 1:
+                    key_notes.append(note[0])
+                # appends the equivalent note with an accidental based on quality and key
+                elif note_value == value and len(note) == 2:
+                    if self.quality == 'MAJOR':
+                        key_notes.append(note[major_accidentals[self.root]])
+                    else:
+                        key_notes.append(note[minor_accidentals[self.root]])
         # creating an array of notes assigned to modes as strings
         degree_modes = []
         mode_list = list(mode_degrees.keys())
@@ -135,25 +141,17 @@ class Key:
         modes = list(zip(degree_modes,mode_notes))
         return modes
 
-# runs indefinitely until requested to stop
-active = True
-while active:
-    # getting key root note with error-checking
-    root = input("Root: ").lower().capitalize()
-    while root not in note_values:
-        root = input("Invalid response. Root: ").lower().capitalize()
-    # getting key quality with error-checking
-    quality = input("Quality: ").upper()
-    while quality not in key_degrees:
-        quality = input("Invalid response. Quality: ").upper()
-    # using an instance of the Key class to print the modes
-    key = Key(root, quality)
-    modes = key.get_modes()
-    for tuple in modes:
-        print(f'{tuple[0]}:\t{tuple[1]}')
-    # checking if the user wants to enter another chord
-    activity = input("Would you like to enter another key? (Y/N) ").upper()
-    while activity != 'Y' and activity != 'N':
-        activity = input("Invalid response. Would you like to enter another key? (Y/N) ").upper()
-    if activity == 'N':
-        active = False
+
+# getting key root note with error-checking
+root = input("Root: ").lower().capitalize()
+while root not in note_values:
+    root = input("Invalid response. Root: ").lower().capitalize()
+# getting key quality with error-checking
+quality = input("Quality: ").upper()
+while quality not in key_degrees:
+    quality = input("Invalid response. Quality: ").upper()
+# using an instance of the Key class to print the modes
+key = Key(root, quality)
+modes = key.get_modes()
+for tuple in modes:
+    print(f'{tuple[0]}:\t{tuple[1]}')
