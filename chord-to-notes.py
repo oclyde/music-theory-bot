@@ -15,6 +15,7 @@ note_values = {
     'B': 5.5
 }
 
+
 # inversely assigning values to note equivalents
 value_notes = {
     0.0: ('C',),
@@ -31,6 +32,7 @@ value_notes = {
     5.5: ('B',)
 }
 
+
 # representing chord qualities as arrays of note values
 chord_degrees = {
     'MAJOR': [0.0, 2.0, 3.5, 5.5],
@@ -38,6 +40,7 @@ chord_degrees = {
     'DIMINISHED': [0.0, 1.5, 3.0, 4.5],
     'AUGMENTED': [0.0, 2.0, 4.0, 5.0]
 }
+
 
 # using the circle of fifths to mark major/augmented roots as either sharp (0) or flat (1) keys
 major_augmented_accidentals = {
@@ -60,6 +63,7 @@ major_augmented_accidentals = {
     'Gb': 1
 }
 
+
 # using the circle of fifths to mark minor/diminished roots as either sharp (0) or flat (1) keys
 minor_diminished_accidentals = {
     'E': 0,
@@ -81,6 +85,7 @@ minor_diminished_accidentals = {
     'Gb': 1
 }
 
+
 # creating a class to work with chords
 class Chord:
     # initializing the chord with a root and quality
@@ -93,40 +98,32 @@ class Chord:
         # calculating the interval between the root and C
         interval = note_values[self.root]
         # creating an array of values representing the notes in the chord
-        values = [degree + interval if degree + interval <= 5.5 else degree + interval - 6 for degree in chord_degrees[self.quality]]
+        values = [(degree + interval) % 6 for degree in chord_degrees[self.quality]]
         # creating an array of notes corresponding to the array of values
         notes = []
         for value in values:
-            for note_value in value_notes:
-                if value == note_value:
-                    # appends the equivalent note if there are no accidentals
-                    if len(value_notes[note_value]) == 1:
-                        notes.append(value_notes[note_value][0])
-                    # appends the equivalent note with an accidental based on quality and key
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MAJOR' or self.quality == 'AUGMENTED'):
-                        notes.append(value_notes[note_value][major_augmented_accidentals[self.root]])
-                    elif len(value_notes[note_value]) == 2 and (self.quality == 'MINOR' or self.quality == 'DIMINISHED'):
-                        notes.append(value_notes[note_value][minor_diminished_accidentals[self.root]])
+            for note_value, note in value_notes.items():
+                # appends the equivalent note if there are no accidentals
+                if value == note_value and len(note) == 1:
+                    notes.append(note[0])
+                # appends the equivalent note with an accidental based on quality and key
+                elif value == note_value and len(note) == 2:
+                    if self.quality == 'MAJOR' or self.quality == 'AUGMENTED':
+                        notes.append(note[major_augmented_accidentals[self.root]])
+                    else:
+                        notes.append(note[minor_diminished_accidentals[self.root]])
         return notes
 
-# runs indefinitely until requested to stop
-active = True
-while active:
-    # getting root note with error-checking
-    root = input("Root: ").lower().capitalize()
-    while root not in note_values:
-        root = input("Invalid response. Root: ").lower().capitalize()
-    # getting chord quality with error-checking
-    quality = input("Quality: ").upper()
-    while quality not in chord_degrees:
-        quality = input("Invalid response. Quality: ").upper()
-    # using an instance of the Chord class to print the notes
-    chord = Chord(root, quality)
-    notes = chord.get_notes()
-    print(notes[0], notes[1], notes[2], notes[3])
-    # checking if the user wants to enter another chord
-    activity = input("Would you like to enter another chord? (Y/N) ").upper()
-    while activity != 'Y' and activity != 'N':
-        activity = input("Invalid response. Would you like to enter another chord? (Y/N) ").upper()
-    if activity == 'N':
-        active = False
+
+# getting root note with error-checking
+root = input("Root: ").lower().capitalize()
+while root not in note_values:
+    root = input("Invalid response. Root: ").lower().capitalize()
+# getting chord quality with error-checking
+quality = input("Quality: ").upper()
+while quality not in chord_degrees:
+    quality = input("Invalid response. Quality: ").upper()
+# using an instance of the Chord class to print the notes
+chord = Chord(root, quality)
+notes = chord.get_notes()
+print(notes[0], notes[1], notes[2], notes[3])
